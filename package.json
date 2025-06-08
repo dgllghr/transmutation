@@ -1,6 +1,6 @@
 {
   "name": "@dgllghr/transmute",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest"
