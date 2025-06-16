@@ -1,6 +1,6 @@
 const hasOwn = Object.prototype.hasOwnProperty;
 
-export function augmentObject<T extends object, U extends PropertyKey, V>(
+export function augment<T extends object, U extends PropertyKey, V>(
   obj: T,
   field: U,
   value: V,
@@ -11,7 +11,7 @@ export function augmentObject<T extends object, U extends PropertyKey, V>(
   };
 }
 
-export function pruneObject<T extends object, K extends keyof T>(
+export function prune<T extends object, K extends keyof T>(
   obj: T,
   field: K,
 ): Omit<T, K> {
@@ -19,7 +19,7 @@ export function pruneObject<T extends object, K extends keyof T>(
   return obj as Omit<T, K>;
 }
 
-export function transmuteObject<
+export function transmute<
   T extends object,
   K extends readonly (keyof T)[],
   U extends object,

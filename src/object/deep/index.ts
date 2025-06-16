@@ -1,6 +1,6 @@
 import type { DeepMerge, DeepOmitMany, PropertyKeyPath } from "./types";
 
-export function transmuteObject<
+export function transmute<
   T extends object,
   R extends readonly PropertyKeyPath[],
   U extends object,
