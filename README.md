@@ -136,9 +136,66 @@ const user: User = {id: 42, email: "arthur.dent@gmail.com"};
 const transformed = transmute(user, ["email"], {name: "Arthur Dent"});
 ```
 
-### Deep Mutations
+## Deep Object Mutations
 
-TODO
+The `deep` module supports adding or removing nested properties.
+
+### transmute
+Add and remove nested properties from an object in one operation.
+
+Remove properties by specifying property paths as arrays of keys that traverse the object structure to delete the target property. Add properties by providing a nested object that gets deep merged with the original, preserving existing properties while adding new ones.
+
+**API**
+
+```typescript
+function transmute<
+  T extends object,
+  R extends readonly PropertyKeyPath[],
+  U extends object,
+>(obj: T, fieldsToRemove: R, fieldsToAdd: U): DeepMerge<DeepOmitMany<T, R>, U>
+```
+
+**Example**
+
+```typescript
+import {transmute} from "@dgllghr/transmutation/object/deep";
+
+const config = {
+  database: {
+    host: "localhost",
+    port: 5432,
+    credentials: {
+      user: "admin",
+      password: "secret"
+    }
+  }
+};
+
+// Remove the password and add ssl to the credentials
+// Type: Config with password removed and ssl added
+// Result:
+// {
+//   database: {
+//     host: "localhost",
+//     port: 5432,
+//     credentials: {
+//       user: "admin",
+//       ssl: true
+//     }
+//   }
+// }
+const updated = transmute(
+  config,
+  [["database", "credentials", "password"]], // Remove nested property
+  {
+    database: {
+      credentials: {
+        ssl: true
+      }
+    }
+  }
+);
+```
 
 ## Tuples
 
