@@ -13,7 +13,9 @@ yarn add @dgllghr/transmutation     # yarn
 
 ## Why?
 
-TODO
+Type narrowing is one of TypeScript’s most powerful features, enabling it to provide sound type-checking for JavaScript's inherently dynamic nature. It’s what makes TypeScript’s structural type system and support for untagged union types so effective. However, narrowing doesn't work when it comes to structural mutations. TypeScript can't safely narrow the type of an object when its keys or value types are changed or narrow a [tuple](https://www.typescriptlang.org/docs/handbook/2/objects.html#tuple-types) when items are added or removed. It must assume the value might be shared elsewhere because there’s no concept of ownership in the type system.
+
+But what if you do know a value is safe to mutate because it’s local and not shared? In those cases, narrowing through mutation would be incredibly useful. This library makes that possible. It gives you tools to perform those mutations and update the types to match the resulting values.
 
 ## Getting Started
 
