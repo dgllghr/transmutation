@@ -40,13 +40,15 @@ console.log(userWithName.name); // No need to use null-coalescing operator
 
 ## Objects
 
+### Shallow Operations
+
 Add and remove properties from an object with automatic type safety.
 
 - **augment** - Add properties to an object.
 - **prune** - Remove properties from an object.
 - **transmute** - Add and remove properties from an object in one operation.
 
-### augment
+#### augment
 Add properties to an object.
 
 **API**
@@ -77,7 +79,7 @@ const user: User = {id: 42, email: "arthur.dent@gmail.com"};
 const userWithName = augment(user, "name", "Arthur Dent");
 ```
 
-### prune
+#### prune
 Remove properties from an object.
 
 **API**
@@ -107,7 +109,7 @@ const user: User = {id: 42, email: "arthur.dent@gmail.com"};
 const userWithoutEmail = prune(user, "email");
 ```
 
-### transmute
+#### transmute
 Add and remove properties from an object in one operation.
 
 **API**
@@ -138,11 +140,11 @@ const user: User = {id: 42, email: "arthur.dent@gmail.com"};
 const transformed = transmute(user, ["email"], {name: "Arthur Dent"});
 ```
 
-## Deep Object Mutations
+### Deep Operations 
 
-The `deep` module supports adding or removing nested properties.
+Add or remove nested properties with automatic type safety.
 
-### transmute
+#### transmute
 Add and remove nested properties from an object in one operation.
 
 Remove properties by specifying property paths as arrays of keys that traverse the object structure to delete the target property. Add properties by providing a nested object that gets deep merged with the original, preserving existing properties while adding new ones.
@@ -196,6 +198,236 @@ const updated = transmute(
       }
     }
   }
+);
+```
+
+## Arrays
+
+### Shallow Operations
+
+Mutate objects in an array with automatic type safety.
+
+- **augment** - Add properties to objects in an array.
+- **prune** - Remove properties from objects in an array.
+- **transmute** - Add and remove properties from objects in an array in one operation.
+
+#### augment
+
+Add properties to objects in an array.
+
+**API**
+
+```typescript
+function augment<T extends object, U extends PropertyKey, V>(
+  array: T[],
+  field: U,
+  value: V | ((item: T, index: number) => V)
+): (T & { [K in U]: V })[]
+```
+
+**Example**
+
+```typescript
+import {augment} from "@dgllghr/transmutation/array/shallow";
+
+interface User {
+  id: number;
+  name: string;
+}
+
+const users: User[] = [
+  {id: 42, name: "Arthur Dent"},
+  {id: 8, name: "Cal Ripken"}
+];
+
+// Type: (User & {username: string})[]
+// [
+//   {id: 42, name: "Arthur Dent", username: "Arthur_Dent"},
+//   {id: 8, name: "Cal Ripken", username: "Cal_Ripken"}
+// ]
+const transformed = augment(users, "username", u => u.name.replace(" ", "_"));
+```
+
+#### prune
+
+Remove properties from objects in an array.
+
+**API**
+
+```typescript
+function prune<T extends object, K extends keyof T>(
+  array: T[],
+  field: K
+): Omit<T, K>[]
+```
+
+**Example**
+
+```typescript
+import {prune} from "@dgllghr/transmutation/array/shallow";
+
+interface User {
+  id: number;
+  name: string;
+}
+
+const users: User[] = [
+  {id: 42, name: "Arthur Dent"},
+  {id: 8, name: "Cal Ripken"}
+];
+
+// Type: Omit<User, "id">[]
+// [
+//   {name: "Arthur Dent"},
+//   {name: "Cal Ripken"}
+// ]
+const transformed = prune(users, "id");
+```
+
+#### transmute
+
+Add and remove properties from objects in an array in one operation.
+
+**API**
+
+```typescript
+function transmute<T extends object, K extends readonly (keyof T)[], U extends object>(
+  array: T[],
+  fieldsToRemove: K,
+  fieldsToAdd: U | ((item: T, index: number) => U)
+): (Omit<T, K[number]> & U)[]
+```
+
+**Example**
+
+```typescript
+import {transmute} from "@dgllghr/transmutation/array/shallow";
+
+interface User {
+  id: number;
+  name: string;
+}
+
+const users: User[] = [
+  {id: 42, name: "Arthur Dent"},
+  {id: 8, name: "Cal Ripken"}
+];
+
+// Type: (Omit<User, "id"> & {username: string})[]
+// [
+//   {name: "Arthur Dent", username: "Arthur_Dent"},
+//   {name: "Cal Ripken", username: "Cal_Ripken"}
+// ]
+const transformed = transmute(users, ["id"], u => ({username: u.name.replace(" ", "_")}));
+```
+
+### Deep Operations
+
+Add or remove nested properties for objects in the array.
+
+#### transmute
+Add and remove nested properties from objects in the array.
+
+**API**
+
+```typescript
+function transmute<
+  T extends object,
+  R extends readonly PropertyKeyPath[],
+  U extends object,
+>(
+  array: T[], 
+  fieldsToRemove: R, 
+  fieldsToAdd: U | ((item: T, index: number) => U)
+): DeepMerge<DeepOmitMany<T, R>, U>[]
+```
+
+**Example**
+
+```typescript
+import {transmute} from "@dgllghr/transmutation/array/deep";
+
+interface User {
+  id: number;
+  name: string;
+  contact: {
+    phone: string;
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      zip: string;
+      country: string;
+    }
+  }
+}
+
+const users: User[] = [
+  {
+    id: 42,
+    name: "Arthur Dent",
+    contact: {
+      phone: "+44 7700 900001",
+      address: {
+        street: "155 Country Lane",
+        city: "West Country Village",
+        state: "Devon",
+        zip: "EX21 5HG",
+        country: "United Kingdom"
+      }
+    }, 
+  },
+  {
+    id: 8,
+    name: "Ford Prefect",
+    contact: {
+      phone: "+44 7700 900002",
+      address: {
+        street: "42 Guildford Street",
+        city: "Guildford",
+        state: "Surrey",
+        zip: "GU1 1AA",
+        country: "United Kingdom"
+      }
+    }
+  }
+]
+
+// Type: User without contact.phone
+//[{
+//  id: 42,
+//  name: "Arthur Dent",
+//  contact: {
+//    address: {
+//      street: "155 Country Lane",
+//      city: "West Country Village",
+//      state: "Devon",
+//      zip: "EX21 5HG",
+//      country: "UK"
+//    }
+//  }
+//}, {
+//  id: 8,
+//  name: "Ford Prefect",
+//  contact: {
+//    address: {
+//      street: "42 Guildford Street",
+//      city: "Guildford",
+//      state: "Surrey",
+//      zip: "GU1 1AA",
+//      country: "UK"
+//    }
+//  }
+//}]
+const transformed = transmute(users,
+  [["contact", "phone"]], 
+  u => ({
+    contact: {
+      address: {
+        country: u.contact.address.country === "United Kingdom" ? "UK" : "USA"
+      }
+    }
+  })
 );
 ```
 
