@@ -203,59 +203,8 @@ const updated = transmute(
 
 Add or remove values in a tuple with automatic type safety.
 
-- **append** - Add a value to the end of the tuple.
-- **prepend** - Add a value to the beginning of the tuple.
 - **augment** - Add a value to the tuple at the provided index.
 - **prune** - Remove a value from the tuple.
-- **transmute** - Remove multiple values from the tuple and add values to the end.
-
-### append
-Add a value to the end of the tuple.
-
-**API**
-
-```typescript
-function append<T extends [...any], V>(
-  tup: T,
-  value: V,
-): Append<T, V>
-```
-
-**Example**
-
-```typescript
-import {append} from "@dgllghr/transmutation/tuple";
-
-const birthday = [10, 3] as [number, number]; // [month, day]
-
-// Type: [number, number, number]
-// [10, 3, 1991]
-const withYear = append(birthday, 1991);
-```
-
-### prepend
-Add a value to the beginning of the tuple.
-
-**API**
-
-```typescript
-function prepend<T extends [...any], V>(
-  tup: T,
-  value: V,
-): Prepend<T, V>
-```
-
-**Example**
-
-```typescript
-import {prepend} from "@dgllghr/transmutation/tuple";
-
-const birthday = [10, 3] as [number, number]; // [month, day]
-
-// Type: [number, number, number]
-// [1991, 10, 3]
-const withYearFirst = prepend(birthday, 1991);
-```
 
 ### augment
 Add a value to the tuple at the provided index.
@@ -304,33 +253,4 @@ const birthday = [10, 3] as [number, number]; // [month, day]
 // Type: [number]
 // [10]
 const monthOnly = prune(birthday, 1);
-```
-
-### transmute
-Remove multiple values from the tuple and add values to the end.
-
-**API**
-
-```typescript
-function transmute<
-  T extends [...any],
-  Indices extends readonly number[],
-  Values extends readonly any[]
->(
-  tup: T,
-  indicesToRemove: Indices,
-  valuesToAdd: Values,
-): [...T, ...Values]
-```
-
-**Example**
-
-```typescript
-import {transmute} from "@dgllghr/transmutation/tuple";
-
-const birthday = [10, 3] as [number, number]; // [month, day]
-
-// Type: [number]
-// [1991]
-const transformed = transmute(birthday, [0, 1], [1991]);
 ```
